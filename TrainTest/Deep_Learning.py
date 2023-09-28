@@ -244,13 +244,6 @@ print('_______________________')
 
 
 if MODEL == 'LSTM':
-#Best hyperparameters: {'learning_rate': 0.017935854871712148, 
-# 'weight_decay': 0.00231525425602806, 'hidden_size': 64, 'num_layers': 1}
-#Best hyperparameters: {'learning_rate': 0.024983187788319143, 'weight_decay': 0.0001, 
-# 'hidden_size': 66, 'num_layers': 2}
-#Best hyperparameters: {'learning_rate': 0.049323808483915176, 'weight_decay': 0.0001, 
-# 'hidden_size': 64, 'num_layers': 1}
-
     print(MODEL)
     rate=0.017935854871712148
     L2=0.00231525425602806
@@ -281,14 +274,6 @@ if MODEL == 'LSTM':
     
 elif MODEL == 'CNN':
     print(MODEL)
-#Best hyperparameters: {'learning_rate': 0.011490006504672167, 
-# 'weight_decay': 0.0009607758717223296, 'kernel_size': 2, 'num_filters': 93, 
-# 'stride': 3}
-#Best hyperparameters: {'learning_rate': 0.0203661724429349,
-#  'weight_decay': 0.0001, 'kernel_size': 2, 'num_filters': 104, 'stride': 3}
-#Best hyperparameters: {'learning_rate': 0.001, 'weight_decay': 0.0001, 'kernel_size': 3, 
-# 'num_filters': 128, 'stride': 3}
-
     rate=0.001
     L2=0.0001
     class Net(nn.Module): 
@@ -316,14 +301,6 @@ elif MODEL == 'CNN':
     model = Net().to(device)
     optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) # Add weight decay to the optimizer
 else:
-#Best hyperparameters: {'learning_rate': 0.007123381892567762, 'weight_decay': 0.0001, 'hidden_size': 90, 
-# 'kernel_size': 2, 'dropout': 0.3209398868251996, 
-# 'num_filters': 109, 'stride': 2}
-#Best hyperparameters: {'learning_rate': 0.015553367468250548, 'weight_decay': 0.0001, 'hidden_size': 71,
-#  'kernel_size': 2, 'dropout': 0.5, 'num_filters': 36, 'stride': 2}
-#Best hyperparameters: {'learning_rate': 0.016987355956073754, 'weight_decay': 0.0001, 'hidden_size': 64,
-#  'kernel_size': 2, 'dropout': 0.5, 'num_filters': 128, 'stride': 3}
-
     print(MODEL)
     rate=0.016987355956073754
     L2= 0.0001
@@ -550,12 +527,7 @@ x = pd.DataFrame({'True': flattened_list})
 yy= pd.DataFrame({'Predicted': y_pred_te})
 print(x.shape,yy.shape)
 
-# SAVE ALL results
+# SAVE
 flattened_list = [item for sublist in y_true_te for item in sublist]
 x = pd.DataFrame({'True': flattened_list, 'Predicted': y_pred_te})
 x.to_csv(f'/home/imatetic/Project/14.6.Final_models/Preds/{ANOM}_{MODEL}.csv')
-x
-
-# %%
-best_model_path
-# %%
