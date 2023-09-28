@@ -7,12 +7,10 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 
-#Postavljanje GPU-a za runanje modela
 device_id = 1
 torch.cuda.set_device(device_id)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-#Definirana struktura modela
 rate=0.007123381892567762
 L2= 0.0001
 class Net(nn.Module):
@@ -53,17 +51,14 @@ model = Net().to(device)
 optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2)
 
 
-# Loadanje modela
 M1 = torch.load('best_model-F1-CNNGRU.pt')
 M2 = torch.load('best_model-F2-CNNGRU.pt')
 M3 = torch.load('best_model-F3-CNNGRU.pt')
 
-#Definirane značajki
 cols=['Set_temp', 'Hvac_state', 'Room_occupation', 'Window', 'Hvac_mode', 'Hvac_state_manual', 
       'Room_temp_up','Room_temp_down', 'Room_temp_cw', 'Room_temp_ccw','Room_temp', 'Orientation_S',
       'Orientation_W', 'Orientation_N', 'Orientation_E','FS_0', 'FS_1','FS_2', 'FS_3']
 
-#Preprocesiranje podataka
 class HvacDataset(torch.utils.data.Dataset):
     def __init__(self, data):
         self.data = data[cols]
@@ -89,28 +84,22 @@ class HvacDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.windows)
 
-#Glavna funkcija koju pozivate
 def detect(df,M1,M2,M3):
-    #Preprocesiranje podataka
     x=HvacDataset(df)
 
-    # Dohvaćanje prozora
     data_loader = torch.utils.data.DataLoader(x, batch_size=1)
     preds=[]
     for inputs in data_loader:
         inputs = inputs.float().to(device)
 
-        # Rezultati modela
         output1 = M1(inputs)
         output2 = M2(inputs)
         output3 = M3(inputs)
 
-        # Dobivanje vjerojatnosti rezultata 
         p1= torch.sigmoid(output1)
         p2= torch.sigmoid(output2)
         p3= torch.sigmoid(output3)
         
-        #Dodavanje vjerojatnosti u numpy listu
         preds.append(p1.cpu().detach().numpy())
         preds.append(p2.cpu().detach().numpy())
         preds.append(p3.cpu().detach().numpy())
