@@ -8,7 +8,7 @@ https://www.mdpi.com/1424-8220/23/1/1
 
 
 ## Use case problem :
--Heating, ventilation, and air conditioning (HVAC) systems are essential for maintaining a comfortable indoor environment in modern buildings. However, HVAC systems are known to consume a lot of energy, which can account for up to 50% of a building's energy consumption. Therefore, it is important to detect and troubleshoot problems in HVAC systems timely. Fault detection and diagnosis (FDD) techniques can help with HVAC monitoring and optimizing system performance for efficient use of energy.
+- Heating, ventilation, and air conditioning (HVAC) systems are essential for maintaining a comfortable indoor environment in modern buildings. However, HVAC systems are known to consume a lot of energy, which can account for up to 50% of a building's energy consumption. Therefore, it is important to detect and troubleshoot problems in HVAC systems timely. Fault detection and diagnosis (FDD) techniques can help with HVAC monitoring and optimizing system performance for efficient use of energy.
 
 ## Data:
 - Example of few features in the used data:
