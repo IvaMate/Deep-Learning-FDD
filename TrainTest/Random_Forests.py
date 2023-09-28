@@ -162,34 +162,7 @@ X_train_shuffled, Y_train_shuffled = shuffle(X_train, Y_train, random_state=42)
 #Y_train_shuffled = Y_train
 
 t=0.5
-'''
-#Hyperparameters: 
 
-RF - F1
-Hyperparameters: 
-OrderedDict([('criterion', 'gini'), 
-('max_depth', 17), 
-('max_features', 'sqrt'), 
-('min_samples_leaf', 1), 
-('min_samples_split', 2), 
-('n_estimators', 1000)])
-RF - F2
-Hyperparameters: 
-OrderedDict([('criterion', 'entropy'), 
-('max_depth', 20), 
-('max_features', 'sqrt'), 
-('min_samples_leaf', 1), 
-('min_samples_split', 2), 
-('n_estimators', 885)])
-RF - F3
-Hyperparameters: 
-OrderedDict([('criterion', 'gini'), 
-('max_depth', 20), 
-('max_features', 'sqrt'), 
-('min_samples_leaf', 1), 
-('min_samples_split', 2), 
-('n_estimators', 1000)])
-'''
 model=RandomForestClassifier(
 criterion='gini',
 max_depth=20,
@@ -306,17 +279,6 @@ plt.legend(loc="lower right")
 plt.show()
 
 
-#SAVE RESULTS
+#SAVE
 x = pd.DataFrame({'True': y_true, 'Predicted': y_pred})
 x.to_csv(f'/home/imatetic/Project/14.6.Final_models/Preds/{ANOM}_RF_anomalies.csv')
-
-#SAVE RESULTS
-#x = pd.DataFrame({'True': y_true, 'Predicted': y_pred})
-#x.to_csv(f'/home/imatetic/Project/Darko/{ANOM}_detection.csv')
-#te.to_csv(f'/home/imatetic/Project/Darko/{ANOM}_input.csv')
-#tet.to_csv(f'/home/imatetic/Project/Darko/{ANOM}_original.csv')
-
-# %%
-#tet=pd.read_csv(f'//home/imatetic/Project/Data/Merge/{ANOM}/Y2018.csv', dtype=dtypes)
-#tet=tet[['Datetime']][:23500]
-# %%
