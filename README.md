@@ -3,9 +3,10 @@
 This github repository is part of research where data is protected by the project licence, so the data isn't given. Notheless I wanted to showcase the development of the models I used in research:
 - Improving the Efficiency of Fan Coil Units in Hotel Buildings through Deep-Learning-Based Fault Detection 2023
 https://www.mdpi.com/1424-8220/23/15/6717
-- A Review of Data-Driven Approaches and Techniques for Fault Detection and Diagnosis in HVAC Systems 2022
+- A Review of Data-Driven Approaches and Techniques for Fault Detection and Diagnosis in HVAC Systems 2023
 https://www.mdpi.com/1424-8220/23/1/1
-
+- Random Forests Model for HVAC System Fault Detection in Hotel Buildings 2023
+https://link.springer.com/chapter/10.1007/978-3-031-43085-5_52
 
 ## Use case problem :
 - Heating, ventilation, and air conditioning (HVAC) systems are essential for maintaining a comfortable indoor environment in modern buildings. However, HVAC systems are known to consume a lot of energy, which can account for up to 50% of a building's energy consumption. Therefore, it is important to detect and troubleshoot problems in HVAC systems timely. Fault detection and diagnosis (FDD) techniques can help with HVAC monitoring and optimizing system performance for efficient use of energy.
