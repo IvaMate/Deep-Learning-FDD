@@ -1,4 +1,4 @@
-# Deep-Learning-FDD
+# DL and ML models for FDD
 
 This github repository is part of research where data is protected by the project licence, so the data isn't given. Notheless I wanted to showcase the development of the models I used in research:
 - Improving the Efficiency of Fan Coil Units in Hotel Buildings through Deep-Learning-Based Fault Detection 2023
