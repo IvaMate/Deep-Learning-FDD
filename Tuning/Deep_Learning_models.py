@@ -285,9 +285,7 @@ if MODEL == 'LSTM':
             out = torch.sigmoid(out)
             return out
 
-    #criterion = nn.BCELoss()
     model = Net().to(device)
-    #optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) # Add weight decay to the optimizer
     space = [Real(0.0001, 0.1, name='learning_rate'),
          Real(0.0001, 0.1, name='weight_decay'),
          Integer(64, 128, name='hidden_size'),  
@@ -389,9 +387,7 @@ elif MODEL == 'CNN':
             out = self.fc1(out)
             out = torch.sigmoid(out)
             return out
-    #criterion = nn.BCELoss()
     model = Net().to(device)
-    #optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) # Add weight decay to the optimizer
     space = [Real(0.0001, 0.1, name='learning_rate'),
         Real(0.0001, 0.1, name='weight_decay'),
         Integer(2, 3, name='kernel_size'), 
@@ -496,9 +492,7 @@ else:
             out = self.fc2(out)
             out = torch.sigmoid(out)
             return out
-    #criterion = nn.BCELoss()
     model = Net().to(device)
-    #optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) # Add weight decay to the optimizer
 
     space = [Real(0.0001, 0.1, name='learning_rate'),
         Real(0.0001, 0.1, name='weight_decay'),
