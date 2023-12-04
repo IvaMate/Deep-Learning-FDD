@@ -131,9 +131,6 @@ class HvacDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         window = self.windows[index]
         target = self.targets[index]
-        #without scaler
-        #window_data = window.drop(columns=["is_detected"]).values
-        #scaler
         window_data = self.scaler.transform(window.drop(columns=["is_detected"]))
         x = torch.from_numpy(window_data).permute(1, 0)
         
