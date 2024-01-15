@@ -62,8 +62,6 @@ def clean_data(df):
     
     df.drop(columns=['Fan_speed','FAN_SPEED_GOOD', 'T_AIR_GOOD','ENERGY_GOOD','IRRAD_ANG','INSERT_valve', 
                      'INSERT_fan1','INSERT_fanStop','INSERT_win'], inplace=True)
-    #df.drop(df[df['Nan_data'] == 1].index, inplace=True)
-    #df.drop(df[df['Set_temp'] == 0].index, inplace = True)
     return df
 
 South = '.*_0_.*'
@@ -209,7 +207,6 @@ def skip_windows(df):
     s=dt.now()
     
     l = []
-    #df=dff[90000:90555] #Test: 105119, 3132,
     for i in range(0, len(df) - window_size + 1, step_size):
         window = df[i:i + window_size + 1]
         
