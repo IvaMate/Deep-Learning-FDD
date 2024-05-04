@@ -34,7 +34,7 @@ from sklearn.metrics import precision_recall_fscore_support
 import matplotlib as mpl
 from sklearn.utils import resample
 from sklearn.utils import shuffle
-mpl.rcParams['font.size'] = 14  # Change the font size to 12
+mpl.rcParams['font.size'] = 14 
 mpl.rcParams['axes.grid'] = False
 
 
