@@ -1,40 +1,26 @@
-
-# In[ ]:   
-#RF
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import LeaveOneGroupOut
 import numpy as np
 import pandas as pd
 import os
-import warnings
-warnings.filterwarnings('ignore')
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
-from datetime import datetime as dt
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve,auc, RocCurveDisplay
-from sklearn.model_selection import GridSearchCV
-import psutil
-from sklearn.ensemble import RandomForestClassifier
-import seaborn as sns
-from sklearn.model_selection import LeaveOneGroupOut, GroupKFold, cross_val_score
-from sklearn.metrics import roc_curve, precision_score, recall_score, f1_score, accuracy_score
-pd.set_option("display.max_columns", None)
-from sklearn.model_selection import  KFold
-import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
-from sklearn.metrics import precision_recall_fscore_support
-import matplotlib as mpl
-from sklearn.utils import shuffle
+import matplotlib.pyplot as plt
+from datetime import datetime as dt
+import psutil
+import seaborn as sns
 from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
+
+import warnings
+warnings.filterwarnings('ignore')
+
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, roc_auc_score
-mpl.rcParams['font.size'] = 14  # Change the font size to 12
-mpl.rcParams['axes.grid'] = False
+from sklearn.utils import shuffle
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import LeaveOneGroupOut, GroupKFold, cross_val_score,GridSearchCV,KFold
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve,auc, RocCurveDisplay,precision_recall_fscore_support,, precision_score, recall_score, f1_score
+
+pd.set_option("display.max_columns", None)
+plt.rcParams['font.size'] = 14 
+plt.rcParams['axes.grid'] = False
 y_true = []
 y_pred = []
 
@@ -109,9 +95,7 @@ def stats_optimized(df):
         new_df[f'{col}_std'] = df[col].rolling(window=window_size).std().shift(-(window_size - 1))[::step_size].astype(np.float32)
 
     for col in (cols_b):
-        #new_df[f'{col}_sum'] = df[col].rolling(window_size, step=step_size).sum().shift(-(window_size - 1))[::step_size].astype(np.float32)
         new_df[f'{col}_max'] = df[col].rolling(window=window_size).max().shift(-(window_size - 1))[::step_size].astype(np.float32)
-#        new_df[f'{col}_groups'] = df[col].rolling(window=window_size).max().shift(-(window_size - 1))[::step_size].apply(lambda x: groups(x))
         new_df[f'{col}_groups'] = df[col].rolling(window=window_size).max().shift(-(window_size - 1))[::step_size].apply(lambda x: groups([x]))
 
 
@@ -152,7 +136,6 @@ search_space = {
     'min_samples_split': Integer(2, 100),
     'min_samples_leaf': Integer(1, 10),
     'criterion':Categorical(['gini','entropy']),
-    #'max_samples': Integer(1, 10)
 }
 # Define the model with default hyperparameters
 model = RandomForestClassifier(
@@ -163,7 +146,7 @@ model = RandomForestClassifier(
 search = BayesSearchCV(
     model,
     search_space,
-    n_iter=iterations,  # <--- number of iterations
+    n_iter=iterations,  
     cv=None,
     n_jobs=-1,
     random_state=42,
@@ -173,7 +156,6 @@ search = BayesSearchCV(
 
 #total_iterations
 for i in range(search.n_iter):
-    #search.fit(X_train, Y_train)
     search.fit(X_train_shuffled, Y_train_shuffled)
     best_params = search.best_params_
     y_pred = search.predict(X_val)
@@ -185,9 +167,8 @@ for i in range(search.n_iter):
     print('    AUC: {:.2f}'.format(auc))
     hyperparams.append(best_params)
     scores.append(auc)
+        
 # Print the best hyperparameters found by the search
 best_index = scores.index(max(scores))
 print('Best hyperparameters: {}'.format(hyperparams[best_index]))
 
-
-# %%
