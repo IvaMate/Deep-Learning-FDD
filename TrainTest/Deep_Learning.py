@@ -2,26 +2,25 @@
 
 # In[ ]:   #LIBS and PARAMS
 import random
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 import seaborn as sns
-from torch.utils.data import DataLoader,random_split, Subset
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
+from itertools import chain
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import DataLoader,random_split, Subset, resample
+
 from sklearn.metrics import confusion_matrix,roc_curve,auc, roc_auc_score,  f1_score, accuracy_score, precision_score, recall_score
 from sklearn.preprocessing import StandardScaler
-import seaborn as sns
-from sklearn.model_selection import KFold
-from itertools import chain
-import matplotlib as mpl
-from sklearn.model_selection import train_test_split
-from sklearn.utils import resample
-mpl.rcParams['font.size'] = 14  
-mpl.rcParams['axes.grid'] = False
+from sklearn.model_selection import KFold,train_test_split
+
+plt.rcParams['font.size'] = 14  
+plt.rcParams['axes.grid'] = False
 
 ######################## Parameters
 s_size=144
@@ -33,6 +32,7 @@ ANOM='F3'
 MODEL='LSTM'
 print(ANOM, MODEL)
 seed=True
+
 ###################Set GPU
 device_id = 1
 torch.cuda.set_device(device_id)
@@ -41,8 +41,8 @@ print(device)
 print(torch.cuda.is_available())
 
 if seed==True:
-    torch.manual_seed(42)  # Set the random seed for CPU
-    torch.cuda.manual_seed_all(42)  # Set the random seed for GPU
+    torch.manual_seed(42)  
+    torch.cuda.manual_seed_all(42) 
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 else:
@@ -111,7 +111,7 @@ class HvacDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         window = self.windows[index]
         target = self.targets[index]
-        #window_data = window.drop(columns=["is_detected"]).values
+       
         #scaler
         window_data = self.scaler.transform(window.drop(columns=["is_detected"]))
         x = torch.from_numpy(window_data).permute(1, 0)
@@ -132,8 +132,6 @@ class For_RF(torch.utils.data.Dataset):
         self.window_size = w_size
         self.step_size = s_size
         self.t_value = 1
-        #self.scaler = StandardScaler()
-        #self.scaler.fit(self.data.drop(columns=["is_detected"]))
         self.windows, self.targets = self.generate_windows_and_targets()
 
     def generate_windows_and_targets(self):
@@ -150,9 +148,7 @@ class For_RF(torch.utils.data.Dataset):
         window = self.windows[index]
         target = self.targets[index]
         window_data = window.drop(columns=["is_detected"]).values
-        #scaler
-        #window_data = self.scaler.transform(window.drop(columns=["is_detected"]))
-        x = torch.from_numpy(window_data)#.permute(1, 0)
+        x = torch.from_numpy(window_data)
         
         if target.sum() >= self.t_value:
             y = torch.tensor([1], dtype=torch.float32)
@@ -184,10 +180,6 @@ def collate_fn_padd(batch,w_size=w_size):
 train_dataset = HvacDataset(tr) 
 val_dataset = HvacDataset(val)
 test_dataset = HvacDataset(te)
-
-#train_dataset2 = For_RF(tr) 
-#val_dataset2 = For_RF(val)
-#test_dataset2 = For_RF(te)
 
 train_dataloader = DataLoader(train_dataset, batch_size=b_size, shuffle=True, collate_fn=collate_fn_padd)
 val_dataloader = DataLoader(val_dataset, batch_size=b_size, shuffle=False, collate_fn=collate_fn_padd)
@@ -221,27 +213,14 @@ datasets = {
     'train_dataset': train_dataset,
     'val_dataset': val_dataset,
     'test_dataset': test_dataset,
-    #'RF_train_dataset': train_dataset2,
-    #'RF_val_dataset': val_dataset2,
-    #'RF_test_dataset': test_dataset2
 }
 
 print('_______________________')
 check_data_balance(datasets)
 print('_______________________')
 
-#  CHECK LENGTH
-
-#print('Original dataset shape: ',tr.shape,val.shape,te.shape)
-#print('For DL: ',len(train_dataset),len(val_dataset),len(test_dataset))
-#print('For RF: ',len(train_dataset2),len(val_dataset2),len(test_dataset2))
-#result = train_dataset.__getitem__(0)
-#tensor_shape = result[0].shape if isinstance(result[0], torch.Tensor) else None
-#print("Tensor shape:", tensor_shape)
-
 
 # In[ ]:##################Set model
-
 
 if MODEL == 'LSTM':
     print(MODEL)
@@ -270,7 +249,7 @@ if MODEL == 'LSTM':
     
     criterion = nn.BCELoss()
     model = Net().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) # Add weight decay to the optimizer
+    optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2)
     
 elif MODEL == 'CNN':
     print(MODEL)
@@ -299,7 +278,7 @@ elif MODEL == 'CNN':
             return out
     criterion = nn.BCELoss()
     model = Net().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) # Add weight decay to the optimizer
+    optimizer = optim.Adam(model.parameters(), lr=rate, weight_decay=L2) 
 else:
     print(MODEL)
     rate=0.016987355956073754
@@ -470,9 +449,10 @@ s=dt.now()
 print('test')
 best_model = Net().to(device)
 best_model.load_state_dict(torch.load(best_model_path))
+
+
 #TEST
 test_loss, y_true_te, y_pred_te = evaluate(best_model, test_dataloader)
-#metrics
 acc_test = accuracy_score(y_true_te, y_pred_te)
 auc_test = roc_auc_score(y_true_te, y_pred_te)
 f1_test = f1_score(y_true_te, y_pred_te)
@@ -496,7 +476,6 @@ print('\n')
 # Plot ROC curve
 plt.figure(figsize=(8, 6))
 plt.plot(fpr_te, tpr_te, color='navy', lw=2, label='Test ROC curve (area = %0.2f)' % auc_test)
-#plt.plot([0, 1], [0, 1], color='gray', lw=1, linestyle='--')
 plt.xlim([0.0, 0.1])
 plt.ylim([0.0, 1.0])
 plt.xlabel('False Positive Rate')
@@ -506,7 +485,7 @@ plt.legend(loc="lower right")
 plt.show()
 
 #Confusion matrix - Test
-plt.figure() # create a new figure
+plt.figure()
 cf_matrix = confusion_matrix(y_true_te, y_pred_te)
 cf_matrix = cf_matrix.astype(np.float64)
 group_names = ['True Neg','False Pos','False Neg','True Pos']
