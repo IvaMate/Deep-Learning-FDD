@@ -49,12 +49,6 @@ Cols2=['Set_temp', 'Hvac_state', 'Room_occupation', 'Window',
        'Irradiation',  'Orientation_S',
        'Orientation_W', 'Orientation_N', 'Orientation_E', 'FS_0', 'FS_1',
        'FS_2', 'FS_3', 'is_detected']
-Cols3=['Unnamed: 0','Set_temp', 'Hvac_state', 'Room_occupation', 'Window',
-       'Hvac_mode', 'Hvac_state_manual', 'Room_temp_up', 'Room_temp_down',
-       'Room_temp_cw', 'Room_temp_ccw', 'Room_temp', 'Outside_temp',
-       'Irradiation',  'Orientation_S',
-       'Orientation_W', 'Orientation_N', 'Orientation_E', 'FS_0', 'FS_1',
-       'FS_2', 'FS_3', 'is_detected']
 
 if seed==True:
     torch.manual_seed(42) 
