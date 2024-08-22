@@ -1,19 +1,19 @@
 
-# In[ ]:   
 import torch
-import random
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
+
+import random
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
 from sklearn.metrics import roc_auc_score,  f1_score, accuracy_score, precision_score, recall_score
 from sklearn.preprocessing import StandardScaler
-import matplotlib as mpl
-mpl.rcParams['font.size'] = 14  
-mpl.rcParams['axes.grid'] = False
+
+plt.rcParams['font.size'] = 14  
+plt.rcParams['axes.grid'] = False
 
 ######################## Parameters
 seed=True
@@ -57,8 +57,8 @@ Cols3=['Unnamed: 0','Set_temp', 'Hvac_state', 'Room_occupation', 'Window',
        'FS_2', 'FS_3', 'is_detected']
 
 if seed==True:
-    torch.manual_seed(42)  # Set the random seed for CPU
-    torch.cuda.manual_seed_all(42)  # Set the random seed for GPU
+    torch.manual_seed(42) 
+    torch.cuda.manual_seed_all(42)  
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 else:
@@ -167,24 +167,19 @@ test_dataset=HvacDataset(te)
 
 def check_data_balance(datasets):
     for dataset_name, dataset in datasets.items():
-        # Initialize counters for each class
         class_counts = {0: 0, 1: 0}
         total_samples = len(dataset)
 
-        # Iterate over the dataset
         for _, y in dataset:
             class_label = int(y.item())
             class_counts[class_label] += 1
 
-        # Calculate percentages
         class_percentages = {class_label: count / total_samples * 100 for class_label, count in class_counts.items()}
 
-        # Print the class counts
         print(f"{dataset_name} Data:")
         for class_label, count in class_counts.items():
             print(f"Class {class_label}: {count} samples")
 
-        # Print the class percentages
         for class_label, percentage in class_percentages.items():
             print(f"Class {class_label}: {percentage:.2f}% samples")
         print()
@@ -209,7 +204,6 @@ test_dataloader = DataLoader(test_dataset, batch_size=b_size, shuffle=False, col
 
 print('Optimize')
 ######################## Parameters
-
 #BAYES    
 from scipy.stats import uniform, randint, rv_discrete
 from skopt import gp_minimize
@@ -298,8 +292,8 @@ if MODEL == 'LSTM':
         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         #############################
         best_val_acc = 0.0
-        patience = 3  # Number of epochs to wait before stopping if no improvement
-        count = 0  # Counter for number of epochs without improvement
+        patience = 3
+        count = 0
         
         train_losses=[]
         val_losses=[]
@@ -326,8 +320,10 @@ if MODEL == 'LSTM':
             vrecalls.append(vrecall_test)
             vf1_scores.append(vf1_test)
             vmean_auc.append(auc_val)
+               
             #Tr
             acc_train = accuracy_score(y_true_tr, y_pred_tr)
+               
             #losses
             train_losses.append(train_loss)
             val_losses.append(val_loss)
@@ -355,9 +351,6 @@ elif MODEL == 'CNN':
     L2=0.0001
 
     class Net(nn.Module): 
-    #CNN Best hyperparameters: {'learning_rate': 0.0001, 'weight_decay': 0.0001, 
-    # 'kernel_size': 3, 
-    #'num_filters': 36, 'stride': 3}
         def __init__(self, input_channels=21, num_filters=num_filters, kernel_size=kernel_size,stride=stride):
             super(Net, self).__init__()
             self.conv_layer1 = nn.Conv1d(input_channels, num_filters, kernel_size)
@@ -400,10 +393,11 @@ elif MODEL == 'CNN':
         
         criterion = nn.BCELoss()
         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+           
         #############################
         best_val_acc = 0.0
-        patience = 3  # Number of epochs to wait before stopping if no improvement
-        count = 0  # Counter for number of epochs without improvement
+        patience = 3  
+        count = 0  
         
         train_losses=[]
         val_losses=[]
@@ -457,8 +451,7 @@ else:
     print(ANOM)
     rate=0.1
     L2=0.0001
-    class Net(nn.Module): #cnn+gru Best hyperparameters: {'learning_rate': 0.1, 'weight_decay': 0.0001, 
-    #'hidden_size': 64, 'kernel_size': 2, 'dropout': 0.43042841104858004, 'num_filters': 128, 'stride': 2}
+    class Net(nn.Module):
         def __init__(self, input_channels=21, num_filters=num_filters, kernel_size=kernel_size, hidden_size=hidden_size, dropout=dropout, stride=stride):
             super(Net, self).__init__()
             self.conv_layer1 = nn.Conv1d(input_channels, num_filters, kernel_size)
@@ -482,9 +475,9 @@ else:
             out = self.bn2(out)
             out = self.relu2(out)
             out = self.max_pool2(out)
-            out = out.permute(0, 2, 1)  # Permute the dimensions to (batch_size, seq_len, input_size) 
-            out, _ = self.gru(out)  # The second output is the hidden state (which we don't need)
-            out = out[:, -1, :]  # Take only the last hidden state, which summarizes the entire sequence
+            out = out.permute(0, 2, 1) 
+            out, _ = self.gru(out) 
+            out = out[:, -1, :]
             out = self.dropout(out)
             out = self.fc2(out)
             out = torch.sigmoid(out)
@@ -509,10 +502,11 @@ else:
         
         criterion = nn.BCELoss()
         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+           
         #############################
         best_val_acc = 0.0
-        patience = 3  # Number of epochs to wait before stopping if no improvement
-        count = 0  # Counter for number of epochs without improvement
+        patience = 3  
+        count = 0
         
         train_losses=[]
         val_losses=[]
@@ -539,8 +533,10 @@ else:
             vrecalls.append(vrecall_test)
             vf1_scores.append(vf1_test)
             vmean_auc.append(auc_val)
+               
             #Tr
             acc_train = accuracy_score(y_true_tr, y_pred_tr)
+               
             #losses
             train_losses.append(train_loss)
             val_losses.append(val_loss)
@@ -558,8 +554,7 @@ else:
             if count == patience:
                 print('No improvement in validation accuracy after {} epochs. Early stopping.'.format(patience))
                 break
-        
-        # Return the average validation loss across all folds
+                   
         return val_loss
 
 
@@ -578,4 +573,3 @@ e=dt.now()
 running_secs=(e-s).seconds
 running_mins=(e-s).total_seconds()/60
 print('finished: %0.2f'% (running_secs), 's, %0.2f' % (running_mins),'min')
-# %%
