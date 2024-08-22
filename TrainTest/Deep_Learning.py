@@ -61,12 +61,7 @@ Cols2=['Set_temp', 'Hvac_state', 'Room_occupation', 'Window',
        'Irradiation',  'Orientation_S',
        'Orientation_W', 'Orientation_N', 'Orientation_E', 'FS_0', 'FS_1',
        'FS_2', 'FS_3', 'is_detected']
-Cols3=['Set_temp', 'Hvac_state', 'Room_occupation', 'Window',
-       'Hvac_mode', 'Hvac_state_manual', 'Room_temp_up', 'Room_temp_down',
-       'Room_temp_cw', 'Room_temp_ccw', 'Room_temp', 'Outside_temp',
-       'Irradiation',  'Orientation_S',
-       'Orientation_W', 'Orientation_N', 'Orientation_E', 'FS_0', 'FS_1',
-       'FS_2', 'FS_3', 'is_detected']
+
 dtypes = {'Set_temp': 'int8', 'Hvac_state': 'int8', 'Room_occupation': 'int8', 'Window': 'int8', 'Hvac_mode': 'int8', 'Hvac_state_manual': 'int8', 'Room_temp_up': 'int8', 'Room_temp_down': 'int8', 'Room_temp_cw': 'int8', 'Room_temp_ccw': 'int8', 'Room_temp': 'float32', 'Outside_temp': 'float32', 'Water_temp': 'int8', 'Nan_data': 'int8', 'is_detected': 'float32', 'Orientation_S': 'int8', 'Orientation_W': 'int8', 'Orientation_N': 'int8', 'Orientation_E': 'int8', 'FS_0': 'float32', 'FS_1': 'float32', 'FS_2': 'float32', 'FS_3': 'float32'}
 
 
@@ -115,40 +110,6 @@ class HvacDataset(torch.utils.data.Dataset):
         #scaler
         window_data = self.scaler.transform(window.drop(columns=["is_detected"]))
         x = torch.from_numpy(window_data).permute(1, 0)
-        
-        if target.sum() >= self.t_value:
-            y = torch.tensor([1], dtype=torch.float32)
-        else:
-            y = torch.tensor([0], dtype=torch.float32)
-
-        return x, y
-
-    def __len__(self):
-        return len(self.windows)
-
-class For_RF(torch.utils.data.Dataset):
-    def __init__(self, data):
-        self.data = data[Cols3]
-        self.window_size = w_size
-        self.step_size = s_size
-        self.t_value = 1
-        self.windows, self.targets = self.generate_windows_and_targets()
-
-    def generate_windows_and_targets(self):
-        windows = []
-        targets = []
-        for i in range(0, len(self.data) - self.window_size + 1, self.step_size):
-            window = self.data[i:i + self.window_size]
-            target = window["is_detected"].values
-            windows.append(window)
-            targets.append(target)
-        return windows, targets
-    
-    def __getitem__(self, index):
-        window = self.windows[index]
-        target = self.targets[index]
-        window_data = window.drop(columns=["is_detected"]).values
-        x = torch.from_numpy(window_data)
         
         if target.sum() >= self.t_value:
             y = torch.tensor([1], dtype=torch.float32)
