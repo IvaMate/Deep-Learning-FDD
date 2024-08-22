@@ -2,40 +2,25 @@
 # In[ ]:   
 import warnings
 warnings.filterwarnings('ignore')
+
+import psutil
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import sklearn.metrics as metrics
-from sklearn.preprocessing import MinMaxScaler
-from datetime import datetime as dt
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import GroupKFold
-import psutil
-from sklearn.model_selection import KFold
-from sklearn.metrics import auc, RocCurveDisplay
-import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, roc_auc_score
-from datetime import datetime as dt
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve,auc, RocCurveDisplay
-from sklearn.model_selection import GridSearchCV
-import psutil
-from sklearn.ensemble import RandomForestClassifier
-import seaborn as sns
-from sklearn.model_selection import LeaveOneGroupOut, GroupKFold, cross_val_score
-from sklearn.metrics import roc_curve, precision_score, recall_score, f1_score, accuracy_score
-pd.set_option("display.max_columns", None)
-from sklearn.model_selection import  KFold
-import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
-from sklearn.metrics import precision_recall_fscore_support
-import matplotlib as mpl
-from sklearn.utils import resample
-from sklearn.utils import shuffle
-mpl.rcParams['font.size'] = 14 
-mpl.rcParams['axes.grid'] = False
+from datetime import datetime as dt
+import seaborn as sns
+
+import sklearn.metrics as metrics
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, roc_curve,auc, RocCurveDisplay,precision_score, recall_score, f1_score,precision_recall_fscore_support
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import LeaveOneGroupOut, GroupKFold, cross_val_score, KFold, GridSearchCV
+from sklearn.utils import resample, shuffle
+
+pd.set_option("display.max_columns", None)
+plt.rcParams['font.size'] = 14 
+plt.rcParams['axes.grid'] = False
 
 
 dtypes = {'Set_temp': 'int8', 'Hvac_state': 'int8', 'Room_occupation': 'int8', 'Window': 'int8', 'Hvac_mode': 'int8', 'Hvac_state_manual': 'int8', 'Room_temp_up': 'int8', 'Room_temp_down': 'int8', 'Room_temp_cw': 'int8', 'Room_temp_ccw': 'int8', 'Room_temp': 'float32', 'Outside_temp': 'float32', 'Water_temp': 'int8', 'Nan_data': 'int8', 'is_detected': 'float32', 'Orientation_S': 'int8', 'Orientation_W': 'int8', 'Orientation_N': 'int8', 'Orientation_E': 'int8', 'FS_0': 'float32', 'FS_1': 'float32', 'FS_2': 'float32', 'FS_3': 'float32'}
@@ -116,9 +101,7 @@ def stats_optimized(df):
         new_df[f'{col}_std'] = df[col].rolling(window=window_size).std().shift(-(window_size - 1))[::step_size].astype(np.float32)
 
     for col in (cols_b):
-        #new_df[f'{col}_sum'] = df[col].rolling(window_size, step=step_size).sum().shift(-(window_size - 1))[::step_size].astype(np.float32)
         new_df[f'{col}_max'] = df[col].rolling(window=window_size).max().shift(-(window_size - 1))[::step_size].astype(np.float32)
-#        new_df[f'{col}_groups'] = df[col].rolling(window=window_size).max().shift(-(window_size - 1))[::step_size].apply(lambda x: groups(x))
         new_df[f'{col}_groups'] = df[col].rolling(window=window_size).max().shift(-(window_size - 1))[::step_size].apply(lambda x: groups([x]))
 
 
@@ -158,8 +141,6 @@ print(X_test.shape,Y_test.shape)
 
 # Shuffle the training data
 X_train_shuffled, Y_train_shuffled = shuffle(X_train, Y_train, random_state=42)
-#X_train_shuffled = X_train
-#Y_train_shuffled = Y_train
 
 t=0.5
 
@@ -178,8 +159,8 @@ print(model.get_params())
 s=dt.now()
 #train
 model.decision_threshold = t
-#model.fit(X_train, Y_train)
 model.fit(X_train_shuffled, Y_train_shuffled)
+
 # VALIDATION
 vpredictions = model.predict(X_val)
 vy_true = Y_val
@@ -198,8 +179,8 @@ print('finished: %0.2f'% (running_secs), 's, %0.2f' % (running_mins),'min')
 print('\n')
 
 
-#average confusion matrix FIX
-plt.figure() # create a new figure
+#average confusion matrix
+plt.figure()
 cf_matrix = confusion_matrix(vy_true, vy_pred)
 cf_matrix = cf_matrix.astype(np.float64)
 group_names = ['True Neg','False Pos','False Neg','True Pos']
@@ -215,6 +196,7 @@ plt.ylabel('True label')
 plt.show()
 
 vfpr_te, vtpr_te, _ = roc_curve(vy_true, vy_pred)
+
 # Plot ROC curve
 plt.figure(figsize=(8, 6))
 plt.plot(vfpr_te, vtpr_te, color='navy', lw=1, label='Test ROC curve (area = %0.2f)' % vauc)
@@ -248,7 +230,7 @@ print('finished: %0.2f'% (running_secs), 's, %0.2f' % (running_mins),'min')
 print('\n')
 
 #average confusion matrix FIX
-plt.figure() # create a new figure
+plt.figure()
 cf_matrix = confusion_matrix(y_true, y_pred)
 cf_matrix = cf_matrix.astype(np.float64)
 group_names = ['True Neg','False Pos','False Neg','True Pos']
@@ -263,9 +245,8 @@ plt.xlabel('Predicted label')
 plt.ylabel('True label')
 plt.show()
 
-
-
 fpr_te, tpr_te, _ = roc_curve(y_true, y_pred)
+
 # Plot ROC curve
 plt.figure(figsize=(8, 6))
 plt.plot(fpr_te, tpr_te, color='navy', lw=1, label='Test ROC curve (area = %0.2f)' % tauc)
